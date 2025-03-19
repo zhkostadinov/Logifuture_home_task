@@ -18,7 +18,7 @@ export class LoginApi {
   }
 
   public async getUserData(request: any, url: string, userId: string, headers: JSON): Promise<JSON> {
-    this.logger.info(`Get user by id: ${userId}`);
+    this.logger.info(`Get user data by id: ${userId}`);
     const response = await request.get(`${url}/user/info/${userId}`, {
       headers: headers,
     });

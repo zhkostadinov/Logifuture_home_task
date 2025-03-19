@@ -83,7 +83,7 @@ test.describe('API wallet tests', () => {
     await expect(updatedWallet.currencyClips.length).toHaveCount(1);
 
     for (let i = 0; i < updatedWallet.currencyClips.length; i++) {
-      if (resExportCustUrl.events[i].currency == 'USD') {
+      if (updatedWallet.currencyClips[i].currency == 'USD') {
         await expect(updatedWallet.currencyClips[i].balance).toBe(100);
       } else {
         await expect(updatedWallet.currencyClips[0].currency).toBe('EUR');
@@ -181,7 +181,7 @@ test.describe('API wallet tests', () => {
     const updatedWallet = await walletApi.geWallet(request, baseApiURL!, walletId, basicHeader);
 
     for (let i = 0; i < updatedWallet.currencyClips.length; i++) {
-      if (resExportCustUrl.events[i].currency == 'USD') {
+      if (updatedWallet.currencyClips[i].currency == 'USD') {
         await expect(updatedWallet.currencyClips[i].balance).toBe(50);
       } else {
         await expect(updatedWallet.currencyClips[0].currency).toBe('EUR');

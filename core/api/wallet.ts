@@ -39,7 +39,7 @@ export class WalletApi {
     transactionId: string,
     headers: JSON
   ): Promise<JSON> {
-    this.logger.info(`Add transaction tp wallet id:${walletId}`);
+    this.logger.info(`Get transaction from wallet id:${walletId} and transaction id: ${transactionId}`);
     const response = await request.get(`${url}/wallet/${walletId}/transaction/${transactionId}`, {
       headers: headers,
     });
@@ -48,7 +48,7 @@ export class WalletApi {
   }
 
   public async getAllTransactionFromWallet(request: any, url: string, walletId: string, headers: JSON): Promise<JSON> {
-    this.logger.info(`Add transaction tp wallet id:${walletId}`);
+    this.logger.info(`Get all transaction from wallet id:${walletId}`);
     const response = await request.get(`${url}/wallet/${walletId}/transactions`, {
       headers: headers,
     });
