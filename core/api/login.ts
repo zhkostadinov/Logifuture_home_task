@@ -2,14 +2,16 @@ import { Logger } from 'log4js';
 
 export class LoginApi {
   logger: Logger;
+  request: any
 
-  constructor(logger: Logger) {
+  constructor(logger: Logger, request: any) {
     this.logger = logger;
+    this.request = request;
   }
 
-  public async login(request: any, url: string, data: JSON, headers: JSON): Promise<JSON> {
+  public async login(url: string, data: JSON, headers: JSON): Promise<JSON> {
     this.logger.info(`Attempt to login with data:${data} `);
-    const response = await request.post(`${url}/user/login`, {
+    const response = await this.request.post(`${url}/user/login`, {
       headers: headers,
       data: data,
     });
@@ -17,9 +19,9 @@ export class LoginApi {
     return await response.json();
   }
 
-  public async getUserData(request: any, url: string, userId: string, headers: JSON): Promise<JSON> {
+  public async getUserData(url: string, userId: string, headers: JSON): Promise<JSON> {
     this.logger.info(`Get user data by id: ${userId}`);
-    const response = await request.get(`${url}/user/info/${userId}`, {
+    const response = await this.request.get(`${url}/user/info/${userId}`, {
       headers: headers,
     });
 

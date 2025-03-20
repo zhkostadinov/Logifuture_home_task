@@ -1,15 +1,19 @@
 import { Logger } from 'log4js';
 
+
 export class WalletApi {
   logger: Logger;
+  request: any
 
-  constructor(logger: Logger) {
+
+  constructor(logger: Logger, request: any) {
     this.logger = logger;
+    this.request = request;
   }
 
-  public async geWallet(request: any, url: string, walletId: string, headers: JSON): Promise<JSON> {
+  public async geWallet(url: string, walletId: string, headers: JSON): Promise<JSON> {
     this.logger.info(`Get wallet by id:${walletId}`);
-    const response = await request.get(`${url}/wallet/${walletId}`, {
+    const response = await this.request.get(`${url}/wallet/${walletId}`, {
       headers: headers,
     });
 
@@ -17,14 +21,13 @@ export class WalletApi {
   }
 
   public async addTransactionToWallet(
-    request: any,
     url: string,
     walletId: string,
     body: JSON,
     headers: JSON
   ): Promise<JSON> {
     this.logger.info(`Add transaction tp wallet id:${walletId}`);
-    const response = await request.post(`${url}/wallet/${walletId}`, {
+    const response = await this.request.post(`${url}/wallet/${walletId}`, {
       headers: headers,
       data: body,
     });
@@ -33,23 +36,22 @@ export class WalletApi {
   }
 
   public async getTransactionFromWallet(
-    request: any,
     url: string,
     walletId: string,
     transactionId: string,
     headers: JSON
   ): Promise<JSON> {
     this.logger.info(`Get transaction from wallet id:${walletId} and transaction id: ${transactionId}`);
-    const response = await request.get(`${url}/wallet/${walletId}/transaction/${transactionId}`, {
+    const response = await this.request.get(`${url}/wallet/${walletId}/transaction/${transactionId}`, {
       headers: headers,
     });
 
     return await response.json();
   }
 
-  public async getAllTransactionFromWallet(request: any, url: string, walletId: string, headers: JSON): Promise<JSON> {
+  public async getAllTransactionFromWallet(url: string, walletId: string, headers: JSON): Promise<JSON> {
     this.logger.info(`Get all transaction from wallet id:${walletId}`);
-    const response = await request.get(`${url}/wallet/${walletId}/transactions`, {
+    const response = await this.request.get(`${url}/wallet/${walletId}/transactions`, {
       headers: headers,
     });
 
