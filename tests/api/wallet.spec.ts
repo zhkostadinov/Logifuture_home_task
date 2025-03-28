@@ -5,22 +5,22 @@ import { loadJsonFile } from '../../utils/helpers/static_data_loader';
 import { LoginApi } from '../../core/api/login';
 import { WalletApi } from '../../core/api/wallet';
 
-let basicHeader, loginData, userData, walletId, logger, loginBody, requestLib, submitTransactionBody;
-
+let basicHeader, loginData, userData, walletId, loginBody, loginApi, walletApi, submitTransactionBody;
 const baseApiURL = process.env.BASE_API_URL;
-const loginApi = new LoginApi(logger, requestLib);
-const walletApi = new WalletApi(logger, requestLib);
+const logger = log4js.getLogger();
+logger.level = 'info';
+
 
 test.describe('API wallet tests', () => {
   test.beforeEach(async ({ request }) => {
-    requestLib = request;
-    logger = log4js.getLogger();
-    logger.level = 'info';
+    loginApi = new LoginApi(logger, request);
+    walletApi = new WalletApi(logger, request);
+    
     basicHeader = loadJsonFile('utils/headers/basic');
     loginBody = loadJsonFile('utils/models/login');
     submitTransactionBody = loadJsonFile('utils/models/transaction');
 
-    basicHeader['X-Service-Id'] = faker.number.int({ min: 10, max: 100000 });
+    basicHeader['X-Service-Id'] = `${faker.number.int({ min: 10, max: 100000 })}`;
     loginBody['username'] = faker.person.firstName();
     loginBody['password'] = faker.person.lastName();
 
@@ -62,7 +62,7 @@ test.describe('API wallet tests', () => {
 
     const updatedWallet = await walletApi.geWallet(baseApiURL!, walletId, basicHeader);
 
-    await expect(updatedWallet.currencyClips.length).toHaveCount(0);
+    await expect(updatedWallet.currencyClips.length).toBe(0);
     await expect(updatedWallet.currencyClips[0].currency).toBe('USD');
     await expect(updatedWallet.currencyClips[0].balance).toBe(100);
     await expect(updatedWallet.currencyClips[0].transactionCount).toBe(1);
@@ -78,7 +78,7 @@ test.describe('API wallet tests', () => {
 
     const updatedWallet = await walletApi.geWallet(baseApiURL!, walletId, basicHeader);
 
-    await expect(updatedWallet.currencyClips.length).toHaveCount(1);
+    await expect(updatedWallet.currencyClips.length).toBe(1);
 
     for (let i = 0; i < updatedWallet.currencyClips.length; i++) {
       if (updatedWallet.currencyClips[i].currency == 'USD') {
@@ -90,7 +90,7 @@ test.describe('API wallet tests', () => {
     }
   });
 
-  test('should add multipple currency clip different currencies - positive balance and wallet is updated', async ({}) => {
+  test('should add multipple currency clip one currencies - positive balance and wallet is updated', async ({}) => {
     const wallet = await walletApi.geWallet(baseApiURL!, walletId, basicHeader);
     submitTransactionBody['amount'] = '100';
     await walletApi.addTransactionToWallet(baseApiURL!, wallet.walletId, submitTransactionBody, basicHeader);
@@ -99,7 +99,7 @@ test.describe('API wallet tests', () => {
 
     const updatedWallet = await walletApi.geWallet(baseApiURL!, walletId, basicHeader);
 
-    await expect(updatedWallet.currencyClips.length).toHaveCount(0);
+    await expect(updatedWallet.currencyClips.length).toBe(0);
     await expect(updatedWallet.currencyClips[0].currency).toBe('USD');
     await expect(updatedWallet.currencyClips[0].balance).toBe(200);
     await expect(updatedWallet.currencyClips[0].transactionCount).toBe(2);
@@ -125,7 +125,7 @@ test.describe('API wallet tests', () => {
 
     const updatedWallet = await walletApi.geWallet(baseApiURL!, walletId, basicHeader);
 
-    await expect(updatedWallet.currencyClips.length).toHaveCount(0);
+    await expect(updatedWallet.currencyClips.length).toBe(0);
     await expect(updatedWallet.currencyClips[0].currency).toBe('USD');
     await expect(updatedWallet.currencyClips[0].balance).toBe(50);
     await expect(updatedWallet.currencyClips[0].transactionCount).toBe(2);
@@ -138,7 +138,6 @@ test.describe('API wallet tests', () => {
     submitTransactionBody['amount'] = '-150';
     submitTransactionBody['type'] = 'debit';
     const transaction = await walletApi.addTransactionToWallet(
-      
       baseApiURL!,
       wallet.walletId,
       submitTransactionBody,
@@ -153,7 +152,7 @@ test.describe('API wallet tests', () => {
     await expect(transaction.status).toBe('finished');
     await expect(transaction.outcome).toBe('denied');
 
-    await expect(updatedWallet.currencyClips.length).toHaveCount(0);
+    await expect(updatedWallet.currencyClips.length).toBe(0);
     await expect(updatedWallet.currencyClips[0].currency).toBe('USD');
     await expect(updatedWallet.currencyClips[0].balance).toBe(100);
     await expect(updatedWallet.currencyClips[0].transactionCount).toBe(2);
